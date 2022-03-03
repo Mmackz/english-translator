@@ -3,9 +3,17 @@ const americanToBritishSpelling = require("./american-to-british-spelling.js");
 const americanToBritishTitles = require("./american-to-british-titles.js");
 const britishOnly = require("./british-only.js");
 
+function flipObject(obj) {
+   return Object.fromEntries(Object.entries(obj).map((e) => [e[1], e[0]]));
+}
+
+function capitalize(str) {
+   return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
 class Translator {
-   static americanToBritish(string) {
-      let wordsToConvert = string;
+   americanToBritish(string) {
+      let wordsToConvert = capitalize(string);
       const combinedWordsTitles = {
          ...americanToBritishSpelling,
          ...americanToBritishTitles,
@@ -14,15 +22,15 @@ class Translator {
       const americanWords = Object.keys(combinedWordsTitles);
       const britishWords = Object.values(combinedWordsTitles);
 
-      // use regex to match word boundarys (avoid words within words)
-
       americanWords.forEach((word, i) => {
-         const index = wordsToConvert.indexOf(word);
-         if (index !== -1) {
-            console.log(word);
+         const match = wordsToConvert.match(new RegExp(`\\b${word}\\b`, "i"));
+         if (match) {
+            const { index } = match;
             const words =
                wordsToConvert.substring(0, index) +
+               `<span class=\"highlight\">` +
                britishWords[i] +
+               "</span>" +
                wordsToConvert.substring(index + word.length);
             wordsToConvert = words;
          }
@@ -30,12 +38,32 @@ class Translator {
       return wordsToConvert;
    }
 
-   britishToAmerican(string) {}
-}
+   britishToAmerican(string) {
+      let wordsToConvert = capitalize(string);
+      const combinedWordsTitles = {
+         ...americanToBritishSpelling,
+         ...americanToBritishTitles,
+         ...flipObject(britishOnly)
+      };
+      const americanWords = Object.keys(combinedWordsTitles);
+      const britishWords = Object.values(combinedWordsTitles);
 
-const t = Translator.americanToBritish(
-   "bookmobile is the arbor armory banister of artifacts and analog stuff."
-);
-console.log(t);
+      britishWords.forEach((word, i) => {
+         const match = wordsToConvert.match(new RegExp(`\\b${word}\\b`, "i"));
+         if (match) {
+            const { index } = match;
+            const words =
+               wordsToConvert.substring(0, index) +
+               `<span class=\"highlight\">` +
+               americanWords[i] +
+               "</span>" +
+               wordsToConvert.substring(index + word.length);
+            wordsToConvert = words;
+         }
+      });
+
+      return wordsToConvert;
+   }
+}
 
 module.exports = Translator;
