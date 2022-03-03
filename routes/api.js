@@ -1,7 +1,7 @@
 "use strict";
 
 const Translator = require("../components/translator.js");
-const validLocales = ["british-to-american", "american-to-british"]
+const validLocales = ["british-to-american", "american-to-british"];
 
 module.exports = function (app) {
    const translator = new Translator();
@@ -12,8 +12,8 @@ module.exports = function (app) {
       // check required fields exist
       if (!locale || !text) {
          res.json({ error: "Required field(s) missing" });
-      } 
-      
+      }
+
       // check locale is valid
       else if (!validLocales.includes(locale)) {
          res.json({ error: "Invalid value for locale field" });
@@ -21,7 +21,14 @@ module.exports = function (app) {
 
       // request is valid, start translating
       else {
-         
+         let translation =
+            locale === "british-to-american"
+               ? translator.britishToAmerican(text)
+               : translator.americanToBritish(text);
+         if (translation === text) {
+            translation = "Everything looks good to me!"
+         }
+         res.json({ text, translation });
       }
    });
 };
