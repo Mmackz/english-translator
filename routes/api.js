@@ -10,8 +10,13 @@ module.exports = function (app) {
       const { locale, text } = req.body;
 
       // check required fields exist
-      if (!locale || !text) {
+      if (!locale || text === undefined) {
          res.json({ error: "Required field(s) missing" });
+      }
+
+      // check if text is empty
+      else if (text === "") {
+         res.json({ error: "No text to translate"})
       }
 
       // check locale is valid
