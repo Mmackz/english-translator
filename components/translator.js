@@ -11,7 +11,22 @@ function capitalize(str) {
    return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
-function wrapHtml(word) {
+function translateTime(string) {
+   return string
+      .split(" ")
+      .map((word) => {
+         if (/\b\d\d:\d\d\b/.test(word)) {
+            return highlight(word.split(":").join("."));
+         }
+         if (/\b\d\d\.\d\d\b/.test(word)) {
+            return highlight(word.split(".").join(":"));
+         }
+         return word;
+      })
+      .join(" ");
+}
+
+function highlight(word) {
    return `<span class=\"highlight\">${word}</span>`;
 }
 
@@ -22,7 +37,7 @@ function convertTitles(string, titles) {
       .map((word) => {
          const lowerWord = word.toLowerCase();
          if (titles.hasOwnProperty(lowerWord)) {
-            return wrapHtml(
+            return highlight(
                titles[lowerWord].charAt(0).toUpperCase() + titles[lowerWord].slice(1)
             );
          }
@@ -47,12 +62,12 @@ class Translator {
             const { index } = match;
             const words =
                wordsToConvert.substring(0, index) +
-               wrapHtml(britishWords[i]) +
+               highlight(britishWords[i]) +
                wordsToConvert.substring(index + word.length);
             wordsToConvert = words;
          }
       });
-      return convertTitles(wordsToConvert, americanToBritishTitles);
+      return translateTime(convertTitles(wordsToConvert, americanToBritishTitles));
    }
 
    britishToAmerican(string) {
@@ -70,13 +85,13 @@ class Translator {
             const { index } = match;
             const words =
                wordsToConvert.substring(0, index) +
-               wrapHtml(americanWords[i]) +
+               highlight(americanWords[i]) +
                wordsToConvert.substring(index + word.length);
             wordsToConvert = words;
          }
       });
 
-      return convertTitles(wordsToConvert, flipObject(americanToBritishTitles));
+      return translateTime(convertTitles(wordsToConvert, flipObject(americanToBritishTitles)));
    }
 }
 
