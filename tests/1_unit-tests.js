@@ -189,6 +189,48 @@ suite("Unit Tests", function () {
             done();
          });
       });
+
+      suite("highlight translations", function () {
+         test("Highlight translation in Mangoes are my favorite fruit.", function (done) {
+            const testString = "Mangoes are my favorite fruit.";
+            const expected = `Mangoes are my <span class=\"highlight\">favourite</span> fruit.`;
+            const result = translator.americanToBritish(testString);
+            assert.isString(result, "expected result to be a string");
+            assert.equal(result, expected);
+            assert.include(result, "highlight", "translation should be highlighted");
+            done();
+         });
+
+         test("highlight translation in I ate yogurt for breakfast.", function (done) {
+            const testString = "I ate yogurt for breakfast.";
+            const expected = `I ate <span class=\"highlight\">yoghurt</span> for breakfast.`;
+            const result = translator.americanToBritish(testString);
+            assert.isString(result, "expected result to be a string");
+            assert.equal(result, expected);
+            assert.include(result, "highlight", "translation should be highlighted");
+            done();
+         });
+
+         test("highlight translation in We watched the footie match for a while.", function (done) {
+            const testString = "We watched the footie match for a while.";
+            const expected = `We watched the <span class=\"highlight\">soccer</span> match for a while.`;
+            const result = translator.britishToAmerican(testString);
+            assert.isString(result, "expected result to be a string");
+            assert.equal(result, expected);
+            assert.include(result, "highlight", "translation should be highlighted");
+            done();
+         });
+
+         test("highlight translation in Paracetamol takes up to an hour to work.", function (done) {
+            const testString = "Paracetamol takes up to an hour to work.";
+            const expected = `<span class=\"highlight\">Tylenol</span> takes up to an hour to work.`;
+            const result = translator.britishToAmerican(testString);
+            assert.isString(result, "expected result to be a string");
+            assert.equal(result, expected);
+            assert.include(result, "highlight", "translation should be highlighted");
+            done();
+         });
+      })
    });
 });
 
