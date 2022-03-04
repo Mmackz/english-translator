@@ -57,15 +57,18 @@ class Translator {
       const britishWords = Object.values(combinedWords);
 
       americanWords.forEach((word, i) => {
-         const match = wordsToConvert.match(new RegExp(`\\b${word}\\b`, "i"));
-         if (match) {
+         let match = wordsToConvert.match(new RegExp(`\\b${word}\\b`, "i"));
+
+         while (match) {
             const { index } = match;
             const words =
                wordsToConvert.substring(0, index) +
                highlight(britishWords[i]) +
                wordsToConvert.substring(index + word.length);
             wordsToConvert = words;
+            match = wordsToConvert.match(new RegExp(`\\b${word}\\b`, "i"));         
          }
+         
       });
       return translateTime(convertTitles(wordsToConvert, americanToBritishTitles));
    }
@@ -80,14 +83,15 @@ class Translator {
       const britishWords = Object.values(combinedWords);
 
       britishWords.forEach((word, i) => {
-         const match = wordsToConvert.match(new RegExp(`\\b${word}\\b`, "i"));
-         if (match) {
+         let match = wordsToConvert.match(new RegExp(`\\b${word}\\b`, "i"));
+         while (match) {
             const { index } = match;
             const words =
                wordsToConvert.substring(0, index) +
                highlight(americanWords[i]) +
                wordsToConvert.substring(index + word.length);
             wordsToConvert = words;
+            match = wordsToConvert.match(new RegExp(`\\b${word}\\b`, "i"));
          }
       });
 
