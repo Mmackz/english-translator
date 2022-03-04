@@ -11,16 +11,35 @@ function capitalize(str) {
    return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
+function wrapHtml(word) {
+   return `<span class=\"highlight\">${word}</span>`;
+}
+
+function convertTitles(string, titles) {
+   const wordsToConvert = string.split(" ");
+
+   return wordsToConvert
+      .map((word) => {
+         const lowerWord = word.toLowerCase();
+         if (titles.hasOwnProperty(lowerWord)) {
+            return wrapHtml(
+               titles[lowerWord].charAt(0).toUpperCase() + titles[lowerWord].slice(1)
+            );
+         }
+         return word;
+      })
+      .join(" ");
+}
+
 class Translator {
    americanToBritish(string) {
       let wordsToConvert = capitalize(string);
-      const combinedWordsTitles = {
+      const combinedWords = {
          ...americanToBritishSpelling,
-         ...americanToBritishTitles,
          ...americanOnly
       };
-      const americanWords = Object.keys(combinedWordsTitles);
-      const britishWords = Object.values(combinedWordsTitles);
+      const americanWords = Object.keys(combinedWords);
+      const britishWords = Object.values(combinedWords);
 
       americanWords.forEach((word, i) => {
          const match = wordsToConvert.match(new RegExp(`\\b${word}\\b`, "i"));
@@ -28,25 +47,22 @@ class Translator {
             const { index } = match;
             const words =
                wordsToConvert.substring(0, index) +
-               `<span class=\"highlight\">` +
-               britishWords[i] +
-               "</span>" +
+               wrapHtml(britishWords[i]) +
                wordsToConvert.substring(index + word.length);
             wordsToConvert = words;
          }
       });
-      return wordsToConvert;
+      return convertTitles(wordsToConvert, americanToBritishTitles);
    }
 
    britishToAmerican(string) {
       let wordsToConvert = capitalize(string);
-      const combinedWordsTitles = {
+      const combinedWords = {
          ...americanToBritishSpelling,
-         ...americanToBritishTitles,
          ...flipObject(britishOnly)
       };
-      const americanWords = Object.keys(combinedWordsTitles);
-      const britishWords = Object.values(combinedWordsTitles);
+      const americanWords = Object.keys(combinedWords);
+      const britishWords = Object.values(combinedWords);
 
       britishWords.forEach((word, i) => {
          const match = wordsToConvert.match(new RegExp(`\\b${word}\\b`, "i"));
@@ -54,15 +70,13 @@ class Translator {
             const { index } = match;
             const words =
                wordsToConvert.substring(0, index) +
-               `<span class=\"highlight\">` +
-               americanWords[i] +
-               "</span>" +
+               wrapHtml(americanWords[i]) +
                wordsToConvert.substring(index + word.length);
             wordsToConvert = words;
          }
       });
 
-      return wordsToConvert;
+      return convertTitles(wordsToConvert, flipObject(americanToBritishTitles));
    }
 }
 
