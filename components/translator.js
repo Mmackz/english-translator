@@ -15,10 +15,10 @@ function translateTime(string) {
    return string
       .split(" ")
       .map((word) => {
-         if (/\b\d\d:\d\d\b/.test(word)) {
+         if (/\b\d\d?:\d\d/.test(word)) {
             return highlight(word.split(":").join("."));
          }
-         if (/\b\d\d\.\d\d\b/.test(word)) {
+         if (/\b\d\d?\.\d\d/.test(word)) {
             return highlight(word.split(".").join(":"));
          }
          return word;
